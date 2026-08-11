@@ -1,0 +1,22 @@
+Crie uma calculadora para conversão de unidades.
+
+Requisitos
+
+Implemente conversões de:
+
+Temperatura.
+Distância.
+Peso.
+Tempo.
+Velocidade.
+
+Exemplo:
+
+1 - Celsius → Fahrenheit
+2 - Quilômetros → Milhas
+3 - Quilogramas → Libras
+
+Extras
+Histórico de conversões.
+Salvar histórico em JSON.
+Criar uma interface mais organizada.
