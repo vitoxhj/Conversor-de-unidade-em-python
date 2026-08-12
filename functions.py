@@ -12,6 +12,10 @@ def create_json(variavel,dados):
 def open_json():
     with open('history_conversor.json', 'r', encoding='utf-8') as arquive:
 	    return json.load(arquive)
+    
+def open_measurement():
+    with open('measurement.json', 'r', encoding='utf-8') as arquive:
+	    return json.load(arquive)
 
 def save_json(variavel):
     with open('history_conversor.json', 'w', encoding='utf-8') as f:
@@ -30,7 +34,8 @@ def interface():
     print('4-Time')
     print('5-Speed')
     print('6-History')
-    print('7-Exit')
+    print('7-View units')
+    print('8-Exit')
     print(line)
     while True:
         try:
@@ -40,7 +45,7 @@ def interface():
             print('Type only numbers!')
             print(line)
             continue
-        if a < 1 or a > 7:
+        if a < 1 or a > 8:
             print('Option unavailable!')
             print(line)
             continue 
@@ -86,122 +91,201 @@ def calcule(unit,mode):
         save_json(history)
         return
 
+def get_measurement(mode):
+    measurements = open_measurement()
+
+    for measurement in measurements:
+        if mode in measurement:
+            return measurement[mode]
+
+    return None    
+    
 def temperature():
     mode = 'Temperature'
-    unit = {
-        'c': 1,
-        'f': -17.22,
-        'k': -272.15,
-        'r': -272.594,
-        'Re': 1.25
-    }
-    calcule(unit,mode)
+    units = get_measurement(mode)
+
+    while True:
+        source = input(f'{mode} source: ').lower().strip()
+        print(line)
+
+        if source not in units:
+            print('Option unavailable!')
+            print(line)
+            continue
+
+        target = input(f'{mode} target: ').lower().strip()
+        print(line)
+
+        if target not in units:
+            print('Option unavailable!')
+            print(line)
+            continue
+
+        try:
+            value = float(input(f'{mode} value: '))
+            print(line)
+
+        except ValueError:
+            print('Type only numbers!')
+            print(line)
+            continue
+
+        # =========================
+        # SOURCE -> CELSIUS
+        # =========================
+
+        if source == 'celsius':
+            celsius = value
+
+        elif source == 'fahrenheit':
+            celsius = (value - 32) * 5 / 9
+
+        elif source == 'kelvin':
+            celsius = value - 273.15
+
+        elif source == 'rankine':
+            celsius = (value - 491.67) * 5 / 9
+
+        elif source == 'reaumur':
+            celsius = value * 5 / 4
+
+        # =========================
+        # CELSIUS -> TARGET
+        # =========================
+
+        if target == 'celsius':
+            result = celsius
+
+        elif target == 'fahrenheit':
+            result = (celsius * 9 / 5) + 32
+
+        elif target == 'kelvin':
+            result = celsius + 273.15
+
+        elif target == 'rankine':
+            result = (celsius + 273.15) * 9 / 5
+
+        elif target == 'reaumur':
+            result = celsius * 4 / 5
+
+        print(f'{value} {source} = {result:.2f} {target}')
+
+        # =========================
+        # SAVE HISTORY
+        # =========================
+
+        date = datetime.datetime.now()
+        date_formatted = date.strftime('%d/%m/%Y %H:%M:%S')
+
+        history = open_json()
+
+        info = {
+            'mode': mode,
+            'source': source,
+            'target': target,
+            'value': value,
+            'result': result,
+            'date': date_formatted
+        }
+
+        history.append(info)
+        save_json(history)
+
+        return
+
 
 def distance():
     mode = 'Distance'
-    unit = {
-        'km': 1000,
-        'm': 1,
-        'dm': 0.1,
-        'cm': 0.01,
-        'mm': 0.001,
-        'um': 0.000001,
-        'nm': 0.000000001,
-        'pm': 1e-12,
-        'nmi': 1852,
-        'mi': 1609.344,
-        'fur': 201.168,
-        'ftm': 1.8288,
-        'yd': 0.9144,
-        'ft': 0.3048,
-        'pol': 0.0254,
-        'li': 500,
-        'zhang': 3.333,
-        'chi': 0.333,
-        'cun': 0.033,
-        'fen': 0.003,
-        'lii': 0.0003,
-        'hao': 0.00003,
-        'pc': 30856775814913672.79,
-        'ld': 384401000,
-        '.': 149597870700,
-        'ly': 9460730472580800
-    }
+    unit = get_measurement(mode)
     calcule(unit,mode)
 
 def weight():
  
  mode = 'Weight'
- unit = {
-     't': 1000000,
-     'kn': 101971.6,
-     'kg': 1000,
-     'hg': 100,
-     'dag': 10,
-     'g': 1,
-     'quilate': 0.2,
-     'centigrama': 0.01,
-     'mg': 1e-3,
-     'ug': 1e-6,
-     'ng': 1e-9,
-     'u': 1.66e-24,
-     'tl': 1016046.91,
-     'tc': 907184.74,
-     'quintl': 50802.35,
-     'quintc': 45359.24,
-     'stone': 6350.29,
-     'lb': 453.59,
-     'onça': 28.35,
-     'dr': 1.77,
-     'gr': 0.06,
-     'pennyweight': 1.56,
-     'mite': 3.24e-3,
-     'doite': 1.34e-4,
-     'koku': 180407.95,
-     'kann': 3750.37,
-     'kinn': 600.06,
-     'monnme': 3.75,
-     'tael': 37.79,
-     'ku ping': 37.32,
-     'lispund': 8502.84,
-     'mark': 212.52,
-     'onu': 27.9,
-     'lod': 13.3
- }
+ unit = get_measurement(mode)
  calcule(unit,mode)
 
 def speed():
     mode = 'Speed'
-    unit = {
-        'km/s': 1000,
-        'm/s': 1,
-        'km/h': 0.28,
-        'mm/s': 1e-3,
-        'um/s': 1e-6,
-        'mile per second': 1609.34,
-        'mph': 0.45,
-        'ft/s': 0.3,
-        'knot': 0.51,
-        'light': 299792458,
-        'sound': 343,
-        'walk': 1.7,
-        'snail': 1e-3
-
-    }
+    unit = get_measurement(mode)
     calcule(unit,mode)
 
 def time():
     mode = 'Time'
-    unit = {
-        'years': 525960,
-        'months': 43830,
-        'weeks': 10080,
-        'days': 1440,
-        'hours': 60,
-        'minutes': 1,
-        'seconds': 0.02,
-        'ms': 1.67e-5,
-        'us': 1.67e-8,
-        'ns': 1.67e-11
-    }
+    unit = get_measurement(mode)
     calcule(unit,mode)
+
+def history():
+    history = open_json()
+    for info in history:
+        print(f'Mode: {info['mode']}')
+        print(f'Source: {info['source']}')
+        print(f'Target: {info['target']}')
+        print(f'Value: {info['value']}')
+        print(f'Result: {info['result']}')
+        print(f'Date: {info['date']}')
+        print(line)
+        print()
+
+def view_units():
+
+    print(line)
+    print('View units of measurement'.center(50))
+    print(line)
+
+    print()
+    print('1-Temperature')
+    print('2-Distance')
+    print('3-Weight')
+    print('4-Time')
+    print('5-Speed')
+    print(line)
+
+    while True:
+
+        try:
+            a = int(input('-> '))
+
+        except ValueError:
+            print(line)
+            print('Type only numbers!')
+            print(line)
+            continue
+
+        if a < 1 or a > 5:
+            print('Option unavailable!')
+            print(line)
+            continue
+
+        mode = a - 1
+
+        history = open_measurement()
+
+        # Get category
+        category = history[mode]
+
+        # Get category name
+        name = list(category.keys())[0]
+
+        # Get units
+        units = category[name]
+
+        print(line)
+        print(name.center(50))
+        print(line)
+
+        if isinstance(units, list):
+
+            # Temperature
+            for unit in units:
+                print(f'- {unit}')
+
+        elif isinstance(units, dict):
+
+            # Distance, Weight, Time, Speed...
+            for unit, value in units.items():
+                print(f'- {unit:<20} {value}')
+
+        print(line)
+
+        return

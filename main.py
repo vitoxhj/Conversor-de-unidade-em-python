@@ -14,6 +14,13 @@ def main():
             functions.time()
         elif option == 5:
             functions.speed()
+        elif option == 6:
+            functions.history()
+        elif option == 7:
+            functions.view_units()
+        elif option == 8:
+            print('Exiting a program...')
+            return
 
 if __name__ == '__main__':
     main()
